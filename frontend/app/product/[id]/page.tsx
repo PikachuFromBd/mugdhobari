@@ -7,15 +7,16 @@ import Link from 'next/link'
 import axios from 'axios'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import { FiShoppingCart, FiShare2, FiHeart } from 'react-icons/fi'
+import { ShoppingCart, Share2, Minus, Plus } from 'lucide-react'
 import { FaFacebook, FaWhatsapp, FaTwitter } from 'react-icons/fa'
-import { demoProducts } from '@/lib/demoProducts'
+import { useToast } from '@/components/Toast'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
 
 export default function ProductDetail() {
   const params = useParams()
   const router = useRouter()
+  const { showToast } = useToast()
   const [product, setProduct] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [selectedSize, setSelectedSize] = useState('')
@@ -40,12 +41,6 @@ export default function ProductDetail() {
         setSelectedColor(response.data.colors[0])
       }
     } catch (error) {
-      const fallback = demoProducts.find((p) => p._id === params.id)
-      if (fallback) {
-        setProduct(fallback as any)
-        if (fallback.sizes?.length) setSelectedSize(fallback.sizes[0])
-        if (fallback.colors?.length) setSelectedColor(fallback.colors[0])
-      }
       console.error('Error fetching product:', error)
     } finally {
       setLoading(false)
@@ -68,15 +63,15 @@ export default function ProductDetail() {
     const existingCart = JSON.parse(localStorage.getItem('cart') || '[]')
     existingCart.push(cartItem)
     localStorage.setItem('cart', JSON.stringify(existingCart))
-    
-    alert('কার্টে যোগ করা হয়েছে!')
-    router.push('/cart')
+    window.dispatchEvent(new Event('cart-updated'))
+
+    showToast('কার্টে যোগ করা হয়েছে!', 'success')
   }
 
   const shareProduct = (platform: string) => {
     const url = window.location.href
     const text = `${product?.nameBn || product?.name} - ৳${product?.price}`
-    
+
     let shareUrl = ''
     switch (platform) {
       case 'facebook':
@@ -90,19 +85,19 @@ export default function ProductDetail() {
         break
       default:
         navigator.clipboard.writeText(url)
-        alert('লিংক কপি করা হয়েছে!')
+        showToast('লিংক কপি করা হয়েছে!', 'info')
         return
     }
-    
+
     window.open(shareUrl, '_blank')
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-[#fafafa]">
         <Header />
-        <div className="pt-32 pb-12 flex justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+        <div className="pt-28 pb-12 flex justify-center">
+          <div className="animate-spin rounded-full h-10 w-10 border-2 border-orange-500 border-t-transparent"></div>
         </div>
         <Footer />
       </div>
@@ -111,11 +106,11 @@ export default function ProductDetail() {
 
   if (!product) {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-[#fafafa]">
         <Header />
-        <div className="pt-32 pb-12 text-center">
-          <h1 className="text-2xl font-bold mb-4">পণ্য পাওয়া যায়নি</h1>
-          <Link href="/" className="text-orange-500 hover:underline">
+        <div className="pt-28 pb-12 text-center">
+          <h1 className="text-2xl font-bold mb-4 text-gray-800">পণ্য পাওয়া যায়নি</h1>
+          <Link href="/" className="btn-primary inline-block px-6 py-2.5">
             হোমে ফিরে যান
           </Link>
         </div>
@@ -125,19 +120,20 @@ export default function ProductDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#fafafa]">
       <Header />
-      <div className="pt-24 pb-12">
+      <div className="pt-20 pb-12">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 bg-white rounded-lg shadow-lg p-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-10 bg-white rounded-2xl shadow-soft p-4 md:p-8">
             {/* Images */}
             <div>
-              <div className="relative h-96 mb-4 rounded-lg overflow-hidden">
+              <div className="relative h-72 sm:h-80 md:h-96 mb-3 rounded-xl overflow-hidden bg-gray-50">
                 <Image
                   src={product.images?.[selectedImage] || product.images?.[0] || '/placeholder.jpg'}
                   alt={product.nameBn || product.name}
                   fill
                   className="object-cover"
+                  priority
                 />
               </div>
               {product.images?.length > 1 && (
@@ -146,8 +142,8 @@ export default function ProductDetail() {
                     <button
                       key={index}
                       onClick={() => setSelectedImage(index)}
-                      className={`relative h-20 rounded overflow-hidden border-2 ${
-                        selectedImage === index ? 'border-orange-500' : 'border-gray-200'
+                      className={`relative h-16 sm:h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                        selectedImage === index ? 'border-orange-500 shadow-md' : 'border-gray-200 hover:border-gray-300'
                       }`}
                     >
                       <Image
@@ -164,41 +160,41 @@ export default function ProductDetail() {
 
             {/* Product Info */}
             <div>
-              <h1 className="text-3xl font-bold mb-4 text-gray-800">
+              <h1 className="text-2xl md:text-3xl font-bold mb-3 text-gray-800">
                 {product.nameBn || product.name}
               </h1>
-              
-              <div className="mb-6">
-                <p className="text-3xl font-bold text-orange-500 mb-2">
-                  ৳{product.price.toLocaleString('bn-BD')}
+
+              <div className="mb-5">
+                <p className="text-2xl md:text-3xl font-bold text-orange-500 mb-1.5">
+                  ৳{product.price?.toLocaleString('bn-BD')}
                 </p>
                 {product.stock > 0 ? (
-                  <p className="text-green-600 font-medium">স্টকে আছে ({product.stock} টি)</p>
+                  <p className="text-green-600 font-medium text-sm">✓ স্টকে আছে ({product.stock} টি)</p>
                 ) : (
-                  <p className="text-red-600 font-medium">স্টক শেষ</p>
+                  <p className="text-red-600 font-medium text-sm">✗ স্টক শেষ</p>
                 )}
               </div>
 
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-2">বিবরণ:</h3>
-                <p className="text-gray-700 leading-relaxed">
+              <div className="mb-5">
+                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1.5">বিবরণ</h3>
+                <p className="text-gray-600 leading-relaxed text-sm md:text-base">
                   {product.descriptionBn || product.description}
                 </p>
               </div>
 
               {/* Size Selection */}
               {product.sizes && product.sizes.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold mb-2">সাইজ:</h3>
+                <div className="mb-5">
+                  <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">সাইজ</h3>
                   <div className="flex flex-wrap gap-2">
                     {product.sizes.map((size: string) => (
                       <button
                         key={size}
                         onClick={() => setSelectedSize(size)}
-                        className={`px-4 py-2 rounded border-2 transition-colors ${
+                        className={`px-4 py-2 rounded-xl text-sm font-medium border-2 transition-all ${
                           selectedSize === size
-                            ? 'border-orange-500 bg-orange-50 text-orange-500'
-                            : 'border-gray-300 hover:border-orange-300'
+                            ? 'border-orange-500 bg-orange-50 text-orange-600'
+                            : 'border-gray-200 text-gray-600 hover:border-gray-300'
                         }`}
                       >
                         {size}
@@ -210,17 +206,17 @@ export default function ProductDetail() {
 
               {/* Color Selection */}
               {product.colors && product.colors.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold mb-2">রঙ:</h3>
+                <div className="mb-5">
+                  <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">রঙ</h3>
                   <div className="flex flex-wrap gap-2">
                     {product.colors.map((color: string) => (
                       <button
                         key={color}
                         onClick={() => setSelectedColor(color)}
-                        className={`px-4 py-2 rounded border-2 transition-colors ${
+                        className={`px-4 py-2 rounded-xl text-sm font-medium border-2 transition-all ${
                           selectedColor === color
-                            ? 'border-orange-500 bg-orange-50 text-orange-500'
-                            : 'border-gray-300 hover:border-orange-300'
+                            ? 'border-orange-500 bg-orange-50 text-orange-600'
+                            : 'border-gray-200 text-gray-600 hover:border-gray-300'
                         }`}
                       >
                         {color}
@@ -232,64 +228,64 @@ export default function ProductDetail() {
 
               {/* Quantity */}
               <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-2">পরিমাণ:</h3>
-                <div className="flex items-center space-x-4">
+                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">পরিমাণ</h3>
+                <div className="flex items-center gap-1">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="w-10 h-10 rounded border border-gray-300 hover:bg-gray-100"
+                    className="w-10 h-10 rounded-xl border border-gray-200 hover:bg-gray-50 flex items-center justify-center transition-colors"
                   >
-                    -
+                    <Minus className="w-4 h-4" />
                   </button>
-                  <span className="text-xl font-semibold">{quantity}</span>
+                  <span className="w-14 text-center text-lg font-semibold">{quantity}</span>
                   <button
                     onClick={() => setQuantity(Math.min(product.stock || 10, quantity + 1))}
-                    className="w-10 h-10 rounded border border-gray-300 hover:bg-gray-100"
+                    className="w-10 h-10 rounded-xl border border-gray-200 hover:bg-gray-50 flex items-center justify-center transition-colors"
                   >
-                    +
+                    <Plus className="w-4 h-4" />
                   </button>
                 </div>
               </div>
 
               {/* Actions */}
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <button
                   onClick={addToCart}
                   disabled={product.stock === 0}
-                  className="w-full bg-orange-500 text-white py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                  className="w-full btn-primary py-3.5 text-base flex items-center justify-center gap-2 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:shadow-none"
                 >
-                  <FiShoppingCart className="w-5 h-5" />
+                  <ShoppingCart className="w-5 h-5" />
                   <span>কার্টে যোগ করুন</span>
                 </button>
 
-                <div className="flex items-center space-x-4">
-                  <span className="text-gray-700 font-medium">শেয়ার করুন:</span>
+                <div className="flex items-center gap-3 pt-2">
+                  <span className="text-gray-500 text-sm font-medium">শেয়ার করুন:</span>
                   <button
                     onClick={() => shareProduct('facebook')}
-                    className="text-blue-600 hover:text-blue-700"
+                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
                     aria-label="Facebook"
                   >
-                    <FaFacebook className="w-6 h-6" />
+                    <FaFacebook className="w-5 h-5" />
                   </button>
                   <button
                     onClick={() => shareProduct('whatsapp')}
-                    className="text-green-600 hover:text-green-700"
+                    className="p-2 text-green-600 hover:bg-green-50 rounded-full transition-colors"
                     aria-label="WhatsApp"
                   >
-                    <FaWhatsapp className="w-6 h-6" />
+                    <FaWhatsapp className="w-5 h-5" />
                   </button>
                   <button
                     onClick={() => shareProduct('twitter')}
-                    className="text-blue-400 hover:text-blue-500"
+                    className="p-2 text-blue-400 hover:bg-blue-50 rounded-full transition-colors"
                     aria-label="Twitter"
                   >
-                    <FaTwitter className="w-6 h-6" />
+                    <FaTwitter className="w-5 h-5" />
                   </button>
                   <button
                     onClick={() => shareProduct('copy')}
-                    className="text-gray-600 hover:text-gray-700"
-                    aria-label="Copy Link"
+                    className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors"
+                    aria-label="লিংক কপি"
                   >
-                    <FiShare2 className="w-5 h-5" />
+                    <Share2 className="w-4 h-4" />
                   </button>
                 </div>
               </div>
@@ -301,4 +297,3 @@ export default function ProductDetail() {
     </div>
   )
 }
-

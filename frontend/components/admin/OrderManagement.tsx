@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import axios from 'axios'
-import { FiCheckCircle } from 'react-icons/fi'
+import { ShoppingCart } from 'lucide-react'
+import { useToast } from '@/components/Toast'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
 
@@ -31,6 +32,7 @@ interface Order {
 }
 
 export default function OrderManagement() {
+  const { showToast } = useToast()
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -59,9 +61,9 @@ export default function OrderManagement() {
         headers: { Authorization: `Bearer ${token}` }
       })
       fetchOrders()
-      alert('অর্ডার স্ট্যাটাস আপডেট করা হয়েছে')
+      showToast('অর্ডার স্ট্যাটাস আপডেট করা হয়েছে', 'success')
     } catch (error: any) {
-      alert('ত্রুটি: ' + (error.response?.data?.error || 'স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে'))
+      showToast('ত্রুটি: ' + (error.response?.data?.error || 'স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে'), 'error')
     }
   }
 
@@ -99,36 +101,35 @@ export default function OrderManagement() {
     <div>
       <h2 className="text-2xl font-bold mb-6 text-gray-800">অর্ডার তালিকা</h2>
 
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-100">
+            <thead className="bg-gray-50">
               <tr>
-                <th className="px-4 py-3 text-left">অর্ডার আইডি</th>
-                <th className="px-4 py-3 text-left">গ্রাহক</th>
-                <th className="px-4 py-3 text-left">পণ্য</th>
-                <th className="px-4 py-3 text-left">মোট</th>
-                <th className="px-4 py-3 text-left">স্ট্যাটাস</th>
-                <th className="px-4 py-3 text-left">তারিখ</th>
-                <th className="px-4 py-3 text-left">কর্ম</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">অর্ডার আইডি</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">গ্রাহক</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">পণ্য</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">মোট</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">স্ট্যাটাস</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">তারিখ</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">কর্ম</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-100">
               {orders.map((order) => (
-                <tr key={order._id} className="border-b">
-                  <td className="px-4 py-3 font-semibold">{order.orderId}</td>
+                <tr key={order._id} className="hover:bg-gray-50">
+                  <td className="px-4 py-3 font-mono text-sm font-semibold text-orange-600">{order.orderId}</td>
                   <td className="px-4 py-3">
                     <div>
                       <p className="font-medium">{order.customer.name}</p>
-                      <p className="text-sm text-gray-600">{order.customer.phone}</p>
-                      <p className="text-sm text-gray-600">{order.customer.email}</p>
+                      <p className="text-sm text-gray-500">{order.customer.phone}</p>
                     </div>
                   </td>
                   <td className="px-4 py-3">
                     <div className="space-y-1">
                       {order.items.map((item, idx) => (
                         <p key={idx} className="text-sm">
-                          {item.product.nameBn} x {item.quantity}
+                          {item.product?.nameBn || item.product?.name || 'N/A'} × {item.quantity}
                         </p>
                       ))}
                     </div>
@@ -137,18 +138,18 @@ export default function OrderManagement() {
                     ৳{order.totalAmount.toLocaleString('bn-BD')}
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`px-2 py-1 rounded text-sm ${getStatusColor(order.status)}`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
                       {getStatusLabel(order.status)}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-sm">
+                  <td className="px-4 py-3 text-sm text-gray-500">
                     {new Date(order.createdAt).toLocaleDateString('bn-BD')}
                   </td>
                   <td className="px-4 py-3">
                     <select
                       value={order.status}
                       onChange={(e) => updateStatus(order.orderId, e.target.value)}
-                      className="px-3 py-1 border border-gray-300 rounded text-sm"
+                      className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                     >
                       <option value="pending">পেন্ডিং</option>
                       <option value="confirmed">নিশ্চিত</option>
@@ -163,14 +164,14 @@ export default function OrderManagement() {
             </tbody>
           </table>
         </div>
-      </div>
 
-      {orders.length === 0 && (
-        <div className="text-center py-12 text-gray-600">
-          কোনো অর্ডার নেই
-        </div>
-      )}
+        {orders.length === 0 && (
+          <div className="text-center py-12 text-gray-500">
+            <ShoppingCart className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+            <p>কোনো অর্ডার নেই</p>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
-

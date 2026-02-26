@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import axios from 'axios'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import { useToast } from '@/components/Toast'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
 
@@ -20,6 +21,7 @@ interface CartItem {
 
 export default function Checkout() {
   const router = useRouter()
+  const { showToast } = useToast()
   const [cart, setCart] = useState<CartItem[]>([])
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
@@ -47,9 +49,9 @@ export default function Checkout() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!formData.name || !formData.email || !formData.phone || !formData.address) {
-      alert('অনুগ্রহ করে সব তথ্য পূরণ করুন')
+      showToast('অনুগ্রহ করে সব তথ্য পূরণ করুন', 'error')
       return
     }
 
@@ -72,15 +74,15 @@ export default function Checkout() {
       }
 
       const response = await axios.post(`${API_URL}/orders`, orderData)
-      
+
       // Clear cart
       localStorage.removeItem('cart')
-      
+
       // Redirect to success page
       router.push(`/order-success?orderId=${response.data.orderId}`)
     } catch (error: any) {
       console.error('Error placing order:', error)
-      alert('অর্ডার করতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।')
+      showToast('অর্ডার করতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।', 'error')
     } finally {
       setLoading(false)
     }
@@ -89,17 +91,17 @@ export default function Checkout() {
   const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#fafafa]">
       <Header />
-      <div className="pt-24 pb-12">
+      <div className="pt-20 pb-12">
         <div className="container mx-auto px-4">
-          <h1 className="text-3xl font-bold mb-8 text-gray-800">অর্ডার করুন</h1>
+          <h1 className="text-2xl md:text-3xl font-bold mb-6 text-gray-800">অর্ডার করুন</h1>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Order Form */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-bold mb-6 text-gray-800">গ্রাহক তথ্য</h2>
-              
+            <div className="bg-white rounded-2xl shadow-soft p-5 sm:p-6">
+              <h2 className="text-xl font-bold mb-5 text-gray-800">গ্রাহক তথ্য</h2>
+
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-gray-700 font-medium mb-2">
@@ -111,7 +113,7 @@ export default function Checkout() {
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    className="input-field"
                     placeholder="আপনার নাম লিখুন"
                   />
                 </div>
@@ -126,7 +128,7 @@ export default function Checkout() {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    className="input-field"
                     placeholder="আপনার ইমেইল লিখুন"
                   />
                 </div>
@@ -141,7 +143,7 @@ export default function Checkout() {
                     value={formData.phone}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    className="input-field"
                     placeholder="01XXXXXXXXX"
                   />
                 </div>
@@ -156,7 +158,7 @@ export default function Checkout() {
                     onChange={handleChange}
                     required
                     rows={4}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    className="input-field"
                     placeholder="আপনার সম্পূর্ণ ঠিকানা লিখুন"
                   />
                 </div>
@@ -164,7 +166,7 @@ export default function Checkout() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-orange-500 text-white py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  className="w-full btn-primary py-3 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? 'অর্ডার করা হচ্ছে...' : 'অর্ডার নিশ্চিত করুন'}
                 </button>
@@ -172,9 +174,9 @@ export default function Checkout() {
             </div>
 
             {/* Order Summary */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-bold mb-6 text-gray-800">অর্ডার সারাংশ</h2>
-              
+            <div className="bg-white rounded-2xl shadow-soft p-5 sm:p-6">
+              <h2 className="text-xl font-bold mb-5 text-gray-800">অর্ডার সারাংশ</h2>
+
               <div className="space-y-4 mb-6">
                 {cart.map((item, index) => (
                   <div key={index} className="flex justify-between items-center border-b pb-4">

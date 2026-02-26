@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import MobileBottomNav from '@/components/MobileBottomNav'
+import { ToastProvider } from '@/components/Toast'
 
 export const metadata: Metadata = {
   title: 'MugdhoBari - আপনার পোশাকের বিশ্বস্ত সঙ্গী',
@@ -15,10 +16,13 @@ export default function RootLayout({
   return (
     <html lang="bn">
       <body className="bangla-font pb-20 md:pb-0">
-        {children}
-        <MobileBottomNav />
+        <ToastProvider>
+          {children}
+          <MobileBottomNav />
+        </ToastProvider>
       </body>
     </html>
   )
 }
+
 

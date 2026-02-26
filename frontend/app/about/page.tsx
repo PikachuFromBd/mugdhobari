@@ -5,13 +5,13 @@ import Footer from '@/components/Footer'
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#fafafa]">
       <Header />
-      <div className="pt-24 pb-12">
+      <div className="pt-20 pb-12">
         <div className="container mx-auto px-4 max-w-4xl">
-          <h1 className="text-4xl font-bold mb-8 text-center text-gray-800">আমাদের সম্পর্কে</h1>
+          <h1 className="text-2xl md:text-3xl font-bold mb-6 text-center text-gray-800">আমাদের সম্পর্কে</h1>
           
-          <div className="bg-white rounded-lg shadow-md p-8 space-y-6">
+          <div className="bg-white rounded-2xl shadow-soft p-6 sm:p-8 space-y-6">
             <div>
               <h2 className="text-2xl font-bold mb-4 text-gray-800">স্বাগতম MugdhoBari-তে</h2>
               <p className="text-gray-700 leading-relaxed">

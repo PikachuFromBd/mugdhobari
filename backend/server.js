@@ -2,7 +2,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
-const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 const app = express();
@@ -22,7 +21,7 @@ app.use('/api/admin', require('./routes/admin'));
 const User = require('./models/User');
 
 // MongoDB Connection
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/mugdhobari';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://shahadathassan29_db_user:dTyDcxcuq8kKf65H@cluster0.izksong.mongodb.net/?appName=Cluster0';
 mongoose.connect(MONGODB_URI)
   .then(async () => {
     console.log('MongoDB Connected');
@@ -34,16 +33,25 @@ const ensureAdminUser = async () => {
   const adminEmail = process.env.ADMIN_EMAIL || 'admin@mugdhobari.com';
   const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
 
-  const existing = await User.findOne({ email: adminEmail });
-  if (!existing) {
-    const hashed = await bcrypt.hash(adminPassword, 10);
-    await User.create({
-      name: 'MugdhoBari Admin',
-      email: adminEmail,
-      password: hashed,
-      role: 'admin',
-    });
-    console.log(`Default admin created: ${adminEmail}`);
+  try {
+    const existing = await User.findOne({ email: adminEmail });
+    if (!existing) {
+      await User.create({
+        name: 'MugdhoBari Admin',
+        email: adminEmail,
+        password: adminPassword,
+        role: 'admin',
+      });
+      console.log(`Default admin created: ${adminEmail}`);
+    } else if (existing.role !== 'admin') {
+      existing.role = 'admin';
+      await existing.save();
+      console.log(`Admin role assigned to: ${adminEmail}`);
+    } else {
+      console.log(`Admin already exists: ${adminEmail}`);
+    }
+  } catch (err) {
+    console.error('Error ensuring admin:', err.message);
   }
 };
 
@@ -51,4 +59,3 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-

@@ -32,6 +32,30 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// Search products
+router.get('/search/query', async (req, res) => {
+  try {
+    const { q } = req.query;
+    if (!q) {
+      return res.json([]);
+    }
+    const regex = new RegExp(q, 'i');
+    const products = await Product.find({
+      $or: [
+        { name: regex },
+        { nameBn: regex },
+        { description: regex },
+        { descriptionBn: regex },
+        { category: regex },
+        { categoryBn: regex },
+      ]
+    }).sort({ createdAt: -1 });
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Get trending products
 router.get('/trending/all', async (req, res) => {
   try {

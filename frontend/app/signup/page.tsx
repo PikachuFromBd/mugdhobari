@@ -56,12 +56,12 @@ export default function Signup() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#fafafa]">
       <Header />
-      <div className="pt-24 pb-12">
+      <div className="pt-20 pb-12">
         <div className="container mx-auto px-4">
-          <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-8">
-            <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">সাইন আপ</h1>
+          <div className="max-w-md mx-auto bg-white rounded-2xl shadow-soft p-6 sm:p-8">
+            <h1 className="text-2xl font-bold mb-5 text-center text-gray-800">সাইন আপ</h1>
             
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
@@ -80,7 +80,7 @@ export default function Signup() {
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="input-field"
                   placeholder="আপনার নাম লিখুন"
                 />
               </div>
@@ -95,7 +95,7 @@ export default function Signup() {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="input-field"
                   placeholder="আপনার ইমেইল লিখুন"
                 />
               </div>
@@ -110,7 +110,7 @@ export default function Signup() {
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="input-field"
                   placeholder="পাসওয়ার্ড লিখুন"
                 />
               </div>
@@ -125,7 +125,7 @@ export default function Signup() {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="input-field"
                   placeholder="পাসওয়ার্ড আবার লিখুন"
                 />
               </div>
@@ -133,7 +133,7 @@ export default function Signup() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-orange-500 text-white py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="w-full btn-primary py-3 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'সাইন আপ করা হচ্ছে...' : 'সাইন আপ করুন'}
               </button>

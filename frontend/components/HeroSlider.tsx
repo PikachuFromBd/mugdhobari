@@ -2,16 +2,17 @@
 
 import { useEffect, useState } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { Autoplay, Pagination } from 'swiper/modules'
+import { Autoplay, Pagination, Navigation, EffectFade } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/pagination'
+import 'swiper/css/navigation'
+import 'swiper/css/effect-fade'
 import Image from 'next/image'
 import Link from 'next/link'
 import axios from 'axios'
-import { DemoProduct } from '@/lib/demoProducts'
 
 type HeroSliderProps = {
-  fallback?: DemoProduct[]
+  fallback?: any[]
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
@@ -38,81 +39,64 @@ export default function HeroSlider({ fallback = [] }: HeroSliderProps) {
   if (!slides.length) return null
 
   return (
-    <section className="pt-20 md:pt-24 bg-gradient-to-r from-orange-50 via-white to-blue-50">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          <div className="lg:col-span-5 space-y-4 text-center lg:text-left">
-            <p className="text-orange-500 font-semibold">মুগ্ধবাড়ি এক্সক্লুসিভ</p>
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
-              ট্রেন্ডিং পণ্যে পান সেরা ডিল
-            </h1>
-            <p className="text-gray-600">
-              হুডি, শাড়ি, থ্রি-পিস, টি-শার্ট এবং আরও অনেক কিছু এখন এক ক্লিকে। ট্রেন্ডিং সংগ্রহ দেখুন।
-            </p>
-            <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
-              <Link
-                href="/products"
-                className="bg-orange-500 text-white px-5 py-3 rounded-lg font-semibold shadow hover:bg-orange-600 transition-colors"
-              >
-                সব পণ্য দেখুন
-              </Link>
-              <Link
-                href="/cart"
-                className="bg-white text-orange-500 px-5 py-3 rounded-lg font-semibold shadow border border-orange-100 hover:border-orange-300 transition-colors"
-              >
-                কার্টে যান
-              </Link>
-            </div>
-          </div>
-          <div className="lg:col-span-7">
-            <Swiper
-              modules={[Autoplay, Pagination]}
-              slidesPerView={1}
-              spaceBetween={16}
-              autoplay={{ delay: 3500, disableOnInteraction: false }}
-              pagination={{ clickable: true }}
-              loop={slides.length > 1}
-              className="rounded-2xl shadow-xl bg-white"
-            >
-              {slides.map((item: any) => (
-                <SwiperSlide key={item._id}>
-                  <Link href={`/product/${item._id}`}>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 items-center">
-                      <div className="relative h-64 md:h-80 rounded-xl overflow-hidden bg-gray-100">
-                        <Image
-                          src={item.images?.[0] || '/placeholder.jpg'}
-                          alt={item.nameBn || item.name}
-                          fill
-                          className="object-cover"
-                          sizes="(min-width: 1024px) 50vw, 100vw"
-                          priority
-                        />
-                      </div>
-                      <div className="space-y-3">
-                        <p className="text-sm text-orange-500 font-semibold">ট্রেন্ডিং</p>
-                        <h3 className="text-2xl font-bold text-gray-900 line-clamp-2">
-                          {item.nameBn || item.name}
-                        </h3>
-                        <p className="text-gray-700 line-clamp-3">
-                          {item.descriptionBn || item.description}
-                        </p>
-                        <p className="text-2xl font-bold text-orange-500">৳{item.price}</p>
-                        <div className="flex flex-wrap gap-2">
-                          <span className="px-3 py-1 bg-orange-100 text-orange-600 rounded-full text-sm">
-                            এখনই কিনুন
-                          </span>
-                          <span className="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm">
-                            ফ্রি পরামর্শ
-                          </span>
-                        </div>
-                      </div>
+    <section className="pt-[4.25rem]">
+      <div className="container mx-auto px-4 pt-4">
+        <Swiper
+          modules={[Autoplay, Pagination, Navigation, EffectFade]}
+          slidesPerView={1}
+          spaceBetween={0}
+          effect="fade"
+          autoplay={{ delay: 5000, disableOnInteraction: false }}
+          pagination={{ clickable: true }}
+          navigation
+          loop={slides.length > 1}
+          speed={800}
+          className="hero-swiper rounded-2xl overflow-hidden"
+          style={{ boxShadow: '0 8px 40px rgba(0,0,0,0.1)' }}
+        >
+          {slides.map((item: any) => (
+            <SwiperSlide key={item._id}>
+              <Link href={`/product/${item._id}`} className="block">
+                <div className="relative h-[300px] sm:h-[380px] md:h-[440px] lg:h-[500px] w-full">
+                  {/* Background Image */}
+                  <Image
+                    src={item.images?.[0] || '/placeholder.jpg'}
+                    alt={item.nameBn || item.name}
+                    fill
+                    className="object-cover"
+                    sizes="100vw"
+                    priority
+                  />
+                  {/* Multi-layer gradient overlay for better contrast */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/10" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent" />
+                  {/* Content Overlay */}
+                  <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-8 md:p-12 text-white">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-orange-500 text-white text-xs sm:text-sm font-bold rounded-full mb-3 shadow-lg">
+                      <span>🔥</span>
+                      <span>ট্রেন্ডিং</span>
+                    </span>
+                    <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-2 md:mb-3 leading-tight" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
+                      {item.nameBn || item.name}
+                    </h2>
+                    <p className="text-sm sm:text-base text-gray-200 mb-3 md:mb-5 max-w-xl line-clamp-2" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.4)' }}>
+                      {item.descriptionBn || item.description}
+                    </p>
+                    <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+                      <span className="text-2xl sm:text-3xl font-bold text-orange-400" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
+                        ৳{item.price}
+                      </span>
+                      <span className="btn-primary px-5 py-2.5 text-sm sm:text-base inline-flex items-center gap-2">
+                        এখনই কিনুন
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                      </span>
                     </div>
-                  </Link>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </div>
-        </div>
+                  </div>
+                </div>
+              </Link>
+            </SwiperSlide>
+          ))}
+        </Swiper>
       </div>
     </section>
   )

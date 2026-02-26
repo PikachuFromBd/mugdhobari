@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import Image from 'next/image'
-import { FiEdit, FiTrash2, FiPlus } from 'react-icons/fi'
+import { Pencil, Trash2, Plus, X, Package } from 'lucide-react'
+import { useToast } from '@/components/Toast'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
 
@@ -25,6 +26,7 @@ interface Product {
 }
 
 export default function ProductManagement() {
+  const { showToast } = useToast()
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -65,10 +67,10 @@ export default function ProductManagement() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     const token = localStorage.getItem('token')
     const formDataToSend = new FormData()
-    
+
     Object.keys(formData).forEach(key => {
       if (key === 'sizes' || key === 'colors') {
         formDataToSend.append(key, JSON.stringify(formData[key as keyof typeof formData].toString().split(',').map(s => s.trim())))
@@ -76,7 +78,7 @@ export default function ProductManagement() {
         formDataToSend.append(key, formData[key as keyof typeof formData].toString())
       }
     })
-    
+
     images.forEach((img) => {
       formDataToSend.append('images', img)
     })
@@ -97,12 +99,12 @@ export default function ProductManagement() {
           }
         })
       }
-      
+
       fetchProducts()
       resetForm()
-      alert('পণ্য সফলভাবে সংরক্ষণ করা হয়েছে')
+      showToast('পণ্য সফলভাবে সংরক্ষণ করা হয়েছে', 'success')
     } catch (error: any) {
-      alert('ত্রুটি: ' + (error.response?.data?.error || 'পণ্য সংরক্ষণ করতে সমস্যা হয়েছে'))
+      showToast('ত্রুটি: ' + (error.response?.data?.error || 'পণ্য সংরক্ষণ করতে সমস্যা হয়েছে'), 'error')
     }
   }
 
@@ -115,9 +117,9 @@ export default function ProductManagement() {
         headers: { Authorization: `Bearer ${token}` }
       })
       fetchProducts()
-      alert('পণ্য মুছে ফেলা হয়েছে')
+      showToast('পণ্য মুছে ফেলা হয়েছে', 'success')
     } catch (error: any) {
-      alert('ত্রুটি: ' + (error.response?.data?.error || 'পণ্য মুছতে সমস্যা হয়েছে'))
+      showToast('ত্রুটি: ' + (error.response?.data?.error || 'পণ্য মুছতে সমস্যা হয়েছে'), 'error')
     }
   }
 
@@ -184,15 +186,15 @@ export default function ProductManagement() {
         <h2 className="text-2xl font-bold text-gray-800">পণ্য তালিকা</h2>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors flex items-center space-x-2"
+          className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors flex items-center gap-2"
         >
-          <FiPlus className="w-5 h-5" />
-          <span>নতুন পণ্য যোগ করুন</span>
+          {showForm ? <X className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
+          <span>{showForm ? 'বন্ধ করুন' : 'নতুন পণ্য যোগ করুন'}</span>
         </button>
       </div>
 
       {showForm && (
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
           <h3 className="text-xl font-bold mb-4">
             {editingProduct ? 'পণ্য সম্পাদনা করুন' : 'নতুন পণ্য যোগ করুন'}
           </h3>
@@ -205,7 +207,7 @@ export default function ProductManagement() {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 />
               </div>
               <div>
@@ -215,7 +217,7 @@ export default function ProductManagement() {
                   value={formData.nameBn}
                   onChange={(e) => setFormData({ ...formData, nameBn: e.target.value })}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 />
               </div>
             </div>
@@ -227,7 +229,7 @@ export default function ProductManagement() {
                 onChange={(e) => setFormData({ ...formData, descriptionBn: e.target.value })}
                 required
                 rows={3}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
               />
             </div>
 
@@ -240,7 +242,7 @@ export default function ProductManagement() {
                     const cat = categories.find(c => c.value === e.target.value)
                     setFormData({ ...formData, category: e.target.value, categoryBn: cat?.label || '' })
                   }}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 >
                   {categories.map(cat => (
                     <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -254,7 +256,7 @@ export default function ProductManagement() {
                   value={formData.price}
                   onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 />
               </div>
             </div>
@@ -267,7 +269,7 @@ export default function ProductManagement() {
                   value={formData.sizes}
                   onChange={(e) => setFormData({ ...formData, sizes: e.target.value })}
                   placeholder="S, M, L, XL"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 />
               </div>
               <div>
@@ -277,7 +279,7 @@ export default function ProductManagement() {
                   value={formData.colors}
                   onChange={(e) => setFormData({ ...formData, colors: e.target.value })}
                   placeholder="লাল, নীল, সবুজ"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 />
               </div>
             </div>
@@ -289,7 +291,7 @@ export default function ProductManagement() {
                 value={formData.stock}
                 onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
               />
             </div>
 
@@ -310,6 +312,7 @@ export default function ProductManagement() {
                   type="checkbox"
                   checked={formData.trending}
                   onChange={(e) => setFormData({ ...formData, trending: e.target.checked })}
+                  className="rounded text-orange-500 focus:ring-orange-500"
                 />
                 <span>ট্রেন্ডিং</span>
               </label>
@@ -318,6 +321,7 @@ export default function ProductManagement() {
                   type="checkbox"
                   checked={formData.featured}
                   onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
+                  className="rounded text-orange-500 focus:ring-orange-500"
                 />
                 <span>ফিচার্ড</span>
               </label>
@@ -326,14 +330,14 @@ export default function ProductManagement() {
             <div className="flex space-x-4">
               <button
                 type="submit"
-                className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600"
+                className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition-colors"
               >
                 {editingProduct ? 'আপডেট করুন' : 'যোগ করুন'}
               </button>
               <button
                 type="button"
                 onClick={resetForm}
-                className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600"
+                className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors"
               >
                 বাতিল করুন
               </button>
@@ -342,24 +346,24 @@ export default function ProductManagement() {
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-100">
+            <thead className="bg-gray-50">
               <tr>
-                <th className="px-4 py-3 text-left">ছবি</th>
-                <th className="px-4 py-3 text-left">নাম</th>
-                <th className="px-4 py-3 text-left">ক্যাটাগরি</th>
-                <th className="px-4 py-3 text-left">মূল্য</th>
-                <th className="px-4 py-3 text-left">স্টক</th>
-                <th className="px-4 py-3 text-left">কর্ম</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">ছবি</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">নাম</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">ক্যাটাগরি</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">মূল্য</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">স্টক</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">কর্ম</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-100">
               {products.map((product) => (
-                <tr key={product._id} className="border-b">
+                <tr key={product._id} className="hover:bg-gray-50">
                   <td className="px-4 py-3">
-                    <div className="relative w-16 h-16">
+                    <div className="relative w-12 h-12">
                       <Image
                         src={product.images?.[0] || '/placeholder.jpg'}
                         alt={product.nameBn}
@@ -368,23 +372,23 @@ export default function ProductManagement() {
                       />
                     </div>
                   </td>
-                  <td className="px-4 py-3">{product.nameBn}</td>
-                  <td className="px-4 py-3">{product.categoryBn}</td>
+                  <td className="px-4 py-3 font-medium">{product.nameBn}</td>
+                  <td className="px-4 py-3 text-gray-600">{product.categoryBn}</td>
                   <td className="px-4 py-3">৳{product.price.toLocaleString('bn-BD')}</td>
                   <td className="px-4 py-3">{product.stock}</td>
                   <td className="px-4 py-3">
-                    <div className="flex space-x-2">
+                    <div className="flex gap-2">
                       <button
                         onClick={() => handleEdit(product)}
-                        className="text-blue-500 hover:text-blue-700"
+                        className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
                       >
-                        <FiEdit className="w-5 h-5" />
+                        <Pencil className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDelete(product._id)}
-                        className="text-red-500 hover:text-red-700"
+                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                       >
-                        <FiTrash2 className="w-5 h-5" />
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </td>
@@ -393,8 +397,14 @@ export default function ProductManagement() {
             </tbody>
           </table>
         </div>
+
+        {products.length === 0 && (
+          <div className="text-center py-12 text-gray-500">
+            <Package className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+            <p>কোনো পণ্য নেই</p>
+          </div>
+        )}
       </div>
     </div>
   )
 }
-

@@ -21,7 +21,7 @@ app.use('/api/admin', require('./routes/admin'));
 const User = require('./models/User');
 
 // MongoDB Connection
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://shahadathassan29_db_user:dTyDcxcuq8kKf65H@cluster0.izksong.mongodb.net/?appName=Cluster0';
+const MONGODB_URI = process.env.MONGODB_URI || '';
 mongoose.connect(MONGODB_URI)
   .then(async () => {
     console.log('MongoDB Connected');

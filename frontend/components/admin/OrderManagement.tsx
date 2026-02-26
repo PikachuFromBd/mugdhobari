@@ -1,0 +1,176 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import axios from 'axios'
+import { FiCheckCircle } from 'react-icons/fi'
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+
+interface Order {
+  _id: string
+  orderId: string
+  customer: {
+    name: string
+    email: string
+    phone: string
+    address: string
+  }
+  items: Array<{
+    product: {
+      nameBn: string
+      name: string
+    }
+    quantity: number
+    size?: string
+    color?: string
+    price: number
+  }>
+  totalAmount: number
+  status: string
+  createdAt: string
+}
+
+export default function OrderManagement() {
+  const [orders, setOrders] = useState<Order[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchOrders()
+  }, [])
+
+  const fetchOrders = async () => {
+    try {
+      const token = localStorage.getItem('token')
+      const response = await axios.get(`${API_URL}/admin/orders`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      setOrders(response.data)
+    } catch (error) {
+      console.error('Error fetching orders:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const updateStatus = async (orderId: string, status: string) => {
+    try {
+      const token = localStorage.getItem('token')
+      await axios.patch(`${API_URL}/admin/orders/${orderId}/status`, { status }, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      fetchOrders()
+      alert('অর্ডার স্ট্যাটাস আপডেট করা হয়েছে')
+    } catch (error: any) {
+      alert('ত্রুটি: ' + (error.response?.data?.error || 'স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে'))
+    }
+  }
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending': return 'bg-yellow-100 text-yellow-800'
+      case 'confirmed': return 'bg-blue-100 text-blue-800'
+      case 'processing': return 'bg-purple-100 text-purple-800'
+      case 'shipped': return 'bg-indigo-100 text-indigo-800'
+      case 'delivered': return 'bg-green-100 text-green-800'
+      case 'cancelled': return 'bg-red-100 text-red-800'
+      default: return 'bg-gray-100 text-gray-800'
+    }
+  }
+
+  const getStatusLabel = (status: string) => {
+    const labels: { [key: string]: string } = {
+      'pending': 'পেন্ডিং',
+      'confirmed': 'নিশ্চিত',
+      'processing': 'প্রক্রিয়াধীন',
+      'shipped': 'শিপ করা হয়েছে',
+      'delivered': 'ডেলিভার করা হয়েছে',
+      'cancelled': 'বাতিল'
+    }
+    return labels[status] || status
+  }
+
+  if (loading) {
+    return <div className="flex justify-center py-12">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+    </div>
+  }
+
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-6 text-gray-800">অর্ডার তালিকা</h2>
+
+      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="px-4 py-3 text-left">অর্ডার আইডি</th>
+                <th className="px-4 py-3 text-left">গ্রাহক</th>
+                <th className="px-4 py-3 text-left">পণ্য</th>
+                <th className="px-4 py-3 text-left">মোট</th>
+                <th className="px-4 py-3 text-left">স্ট্যাটাস</th>
+                <th className="px-4 py-3 text-left">তারিখ</th>
+                <th className="px-4 py-3 text-left">কর্ম</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.map((order) => (
+                <tr key={order._id} className="border-b">
+                  <td className="px-4 py-3 font-semibold">{order.orderId}</td>
+                  <td className="px-4 py-3">
+                    <div>
+                      <p className="font-medium">{order.customer.name}</p>
+                      <p className="text-sm text-gray-600">{order.customer.phone}</p>
+                      <p className="text-sm text-gray-600">{order.customer.email}</p>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="space-y-1">
+                      {order.items.map((item, idx) => (
+                        <p key={idx} className="text-sm">
+                          {item.product.nameBn} x {item.quantity}
+                        </p>
+                      ))}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 font-semibold">
+                    ৳{order.totalAmount.toLocaleString('bn-BD')}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className={`px-2 py-1 rounded text-sm ${getStatusColor(order.status)}`}>
+                      {getStatusLabel(order.status)}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-sm">
+                    {new Date(order.createdAt).toLocaleDateString('bn-BD')}
+                  </td>
+                  <td className="px-4 py-3">
+                    <select
+                      value={order.status}
+                      onChange={(e) => updateStatus(order.orderId, e.target.value)}
+                      className="px-3 py-1 border border-gray-300 rounded text-sm"
+                    >
+                      <option value="pending">পেন্ডিং</option>
+                      <option value="confirmed">নিশ্চিত</option>
+                      <option value="processing">প্রক্রিয়াধীন</option>
+                      <option value="shipped">শিপ করা হয়েছে</option>
+                      <option value="delivered">ডেলিভার করা হয়েছে</option>
+                      <option value="cancelled">বাতিল</option>
+                    </select>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {orders.length === 0 && (
+        <div className="text-center py-12 text-gray-600">
+          কোনো অর্ডার নেই
+        </div>
+      )}
+    </div>
+  )
+}
+

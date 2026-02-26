@@ -11,7 +11,7 @@ import { ShoppingCart, Share2, Minus, Plus } from 'lucide-react'
 import { FaFacebook, FaWhatsapp, FaTwitter } from 'react-icons/fa'
 import { useToast } from '@/components/Toast'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+import { API_URL } from '@/lib/api'
 
 export default function ProductDetail() {
   const params = useParams()

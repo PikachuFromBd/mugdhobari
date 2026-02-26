@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 import { Menu, X, User, ShoppingCart, Search, Package, ShoppingBag, Shirt, Sparkles, Scissors, ChevronDown } from 'lucide-react'
 import axios from 'axios'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+import { API_URL } from '@/lib/api'
 
 export default function Header() {
   const router = useRouter()

@@ -5,7 +5,7 @@ import axios from 'axios'
 import { ShoppingCart } from 'lucide-react'
 import { useToast } from '@/components/Toast'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+import { API_URL } from '@/lib/api'
 
 interface Order {
   _id: string

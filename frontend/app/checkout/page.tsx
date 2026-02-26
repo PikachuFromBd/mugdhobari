@@ -7,7 +7,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { useToast } from '@/components/Toast'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+import { API_URL } from '@/lib/api'
 
 interface CartItem {
   productId: string

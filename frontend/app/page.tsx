@@ -8,7 +8,7 @@ import Footer from '@/components/Footer'
 import HeroSlider from '@/components/HeroSlider'
 import axios from 'axios'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+import { API_URL } from '@/lib/api'
 
 export default function Home() {
   const [products, setProducts] = useState([])

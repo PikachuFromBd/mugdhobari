@@ -10,14 +10,9 @@ import 'swiper/css/effect-fade'
 import Image from 'next/image'
 import Link from 'next/link'
 import axios from 'axios'
+import { API_URL } from '@/lib/api'
 
-type HeroSliderProps = {
-  fallback?: any[]
-}
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
-
-export default function HeroSlider({ fallback = [] }: HeroSliderProps) {
+export default function HeroSlider() {
   const [slides, setSlides] = useState<any[]>([])
 
   useEffect(() => {
@@ -29,12 +24,14 @@ export default function HeroSlider({ fallback = [] }: HeroSliderProps) {
           return
         }
       } catch (error) {
-        // ignore, use fallback
+        console.error("Failed to fetch slides", error)
       }
-      setSlides(fallback)
     }
+    
     fetchSlides()
-  }, [fallback])
+    // ❌ REMOVED `fallback` from this array. 
+    // This stops the infinite loop of duplicate API calls!
+  }, []) 
 
   if (!slides.length) return null
 
@@ -49,27 +46,30 @@ export default function HeroSlider({ fallback = [] }: HeroSliderProps) {
           autoplay={{ delay: 5000, disableOnInteraction: false }}
           pagination={{ clickable: true }}
           navigation
-          loop={slides.length > 1}
+          // Note: Swiper loop works best when there are at least 3 slides to avoid glitchy cloning
+          loop={slides.length > 2} 
           speed={800}
           className="hero-swiper rounded-2xl overflow-hidden"
           style={{ boxShadow: '0 8px 40px rgba(0,0,0,0.1)' }}
         >
-          {slides.map((item: any) => (
-            <SwiperSlide key={item._id}>
+          {slides.map((item: any, index: number) => (
+            // Added index to the key to guarantee 100% uniqueness, even when Swiper clones
+            <SwiperSlide key={`${item._id}-${index}`}>
               <Link href={`/product/${item._id}`} className="block">
                 <div className="relative h-[300px] sm:h-[380px] md:h-[440px] lg:h-[500px] w-full">
                   {/* Background Image */}
                   <Image
                     src={item.images?.[0] || '/placeholder.jpg'}
-                    alt={item.nameBn || item.name}
+                    alt={item.nameBn || item.name || 'Product Image'}
                     fill
                     className="object-cover"
                     sizes="100vw"
-                    priority
+                    priority={index === 0} // Only prioritize the first image for better performance
                   />
                   {/* Multi-layer gradient overlay for better contrast */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/10" />
                   <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent" />
+                  
                   {/* Content Overlay */}
                   <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-8 md:p-12 text-white">
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-orange-500 text-white text-xs sm:text-sm font-bold rounded-full mb-3 shadow-lg">

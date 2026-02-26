@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { Pencil, Trash2, Plus, X, Package } from 'lucide-react'
 import { useToast } from '@/components/Toast'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+import { API_URL } from '@/lib/api'
 
 interface Product {
   _id: string

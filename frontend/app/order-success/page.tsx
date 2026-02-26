@@ -9,7 +9,7 @@ import { FaCheckCircle, FaFacebook, FaWhatsapp, FaTwitter, FaCopy } from 'react-
 import { FiShare2 } from 'react-icons/fi'
 import { useToast } from '@/components/Toast'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+import { API_URL } from '@/lib/api'
 
 function OrderSuccessContent() {
   const searchParams = useSearchParams()

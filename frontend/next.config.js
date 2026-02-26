@@ -8,6 +8,17 @@ const nextConfig = {
     "*.workers.dev" 
   ],
 
+  // Proxy /api/* to the Express backend so it works from ANY domain
+  // (Cloudflare tunnel, custom domain, localhost — all work)
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://localhost:5000/api/:path*',
+      },
+    ]
+  },
+
   images: {
     remotePatterns: [
       { protocol: 'http', hostname: 'localhost' },

@@ -59,14 +59,10 @@ export default function Header() {
     const onCartUpdate = () => updateCartCount()
     window.addEventListener('cart-updated', onCartUpdate)
 
-    // Poll cart every 500ms for instant updates
-    const interval = setInterval(updateCartCount, 500)
-
     return () => {
       window.removeEventListener('scroll', handleScroll)
       window.removeEventListener('storage', onStorage)
       window.removeEventListener('cart-updated', onCartUpdate)
-      clearInterval(interval)
     }
   }, [updateCartCount, checkAuth])
 
@@ -124,11 +120,10 @@ export default function Header() {
 
   return (
     <>
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled 
-          ? 'bg-white/95 backdrop-blur-md shadow-[0_1px_3px_rgba(0,0,0,0.08)]' 
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+          ? 'bg-white/95 backdrop-blur-md shadow-[0_1px_3px_rgba(0,0,0,0.08)]'
           : 'bg-white border-b border-gray-100'
-      }`}>
+        }`}>
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16 md:h-[4.25rem]">
             {/* Logo */}
@@ -194,9 +189,8 @@ export default function Header() {
                 className="relative p-2 text-gray-600 hover:text-orange-500 hover:bg-orange-50 rounded-full transition-all"
               >
                 <ShoppingCart className="w-[1.15rem] h-[1.15rem]" />
-                <span className={`absolute -top-0.5 -right-0.5 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center leading-none transition-all ${
-                  cartCount > 0 ? 'bg-orange-500 scale-100' : 'bg-gray-300 scale-90'
-                }`}>
+                <span className={`absolute -top-0.5 -right-0.5 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center leading-none transition-all ${cartCount > 0 ? 'bg-orange-500 scale-100' : 'bg-gray-300 scale-90'
+                  }`}>
                   {cartCount}
                 </span>
               </Link>
@@ -238,9 +232,8 @@ export default function Header() {
           </div>
 
           {/* Mobile Menu */}
-          <div className={`md:hidden overflow-hidden transition-all duration-300 ${
-            isMenuOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
-          }`}>
+          <div className={`md:hidden overflow-hidden transition-all duration-300 ${isMenuOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
+            }`}>
             <nav className="py-4 border-t border-gray-100 space-y-1">
               <Link href="/" onClick={() => setIsMenuOpen(false)} className="block px-3 py-2.5 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors font-medium">
                 হোম

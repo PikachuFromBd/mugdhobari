@@ -40,14 +40,15 @@
 }
 
 @layer components {
+
   /* ── Product Card ── */
   .product-card {
     @apply bg-white rounded-2xl overflow-hidden transition-all duration-300 ease-out;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
   }
 
   .product-card:hover {
-    box-shadow: 0 10px 40px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
     transform: translateY(-4px);
   }
 
@@ -69,6 +70,39 @@
   .input-field {
     @apply w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 transition-all duration-200 outline-none bg-white;
   }
+
+  /* ── Trending Badge (CSS-only, no emoji) ── */
+  .trending-badge {
+    @apply inline-flex items-center px-3 py-1 text-white text-xs sm:text-sm font-bold rounded-full shadow-lg uppercase tracking-wide;
+    background: linear-gradient(135deg, #f97316, #ef4444);
+    letter-spacing: 0.04em;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .trending-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: badge-shine 3s ease-in-out infinite;
+  }
+
+  /* ── Fire Badge ── */
+  .fire-badge {
+    @apply inline-flex items-center gap-1 px-2.5 py-1 text-white text-[10px] font-bold rounded-lg uppercase tracking-wider;
+    background: linear-gradient(135deg, #f97316, #ef4444);
+    box-shadow: 0 2px 10px rgba(249, 115, 22, 0.4);
+    animation: fire-pulse 2s ease-in-out infinite;
+  }
+
+  /* ── Shadow soft ── */
+  .shadow-soft {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  }
 }
 
 @layer utilities {
@@ -87,6 +121,23 @@
 
   .animate-slide-down {
     animation: slide-down 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* ── Mobile Responsive Fix (Center perfectly without transform conflict) ── */
+  @media (max-width: 640px) {
+
+    .animate-slide-in,
+    .animate-fade-in,
+    .animate-slide-down {
+      position: fixed !important;
+      left: 16px !important;
+      right: 16px !important;
+      margin: 0 auto !important;
+      /* Left ও Right সেট করে Margin auto দিলে পারফেক্ট সেন্টারে থাকবে */
+      width: auto !important;
+      max-width: 380px;
+      /* বেশি বড় স্ক্রিনে যেনো খুব চওড়া না হয়ে যায় */
+    }
   }
 }
 
@@ -110,19 +161,46 @@
   background: #94a3b8;
 }
 
-/* ── Swiper Overrides ── */
+/* ── Swiper Overrides — Animated Progress Dots ── */
 .swiper-pagination-bullet {
-  background: #d1d5db;
+  background: #e5e7eb;
   opacity: 1;
-  width: 10px;
-  height: 10px;
-  transition: all 0.3s;
+  width: 8px;
+  height: 8px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
 }
 
 .swiper-pagination-bullet-active {
   background: var(--primary);
-  width: 28px;
-  border-radius: 5px;
+  width: 32px;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.swiper-pagination-bullet-active::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0;
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 4px;
+  animation: dot-progress 3.5s linear forwards;
+}
+
+@keyframes dot-progress {
+  from {
+    width: 0;
+  }
+
+  to {
+    width: 100%;
+  }
 }
 
 /* Single clean arrow set — works for ALL swipers */
@@ -131,22 +209,26 @@
   width: 40px !important;
   height: 40px !important;
   border-radius: 50%;
-  background: rgba(255,255,255,0.92);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(8px);
-  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.10);
   transition: all 0.25s ease;
-  color: transparent !important; /* hide default text */
+  color: transparent !important;
+  /* hide default text */
 }
+
 .swiper-button-next:hover,
 .swiper-button-prev:hover {
   background: var(--primary);
-  box-shadow: 0 4px 20px rgba(249,115,22,0.35);
+  box-shadow: 0 4px 20px rgba(249, 115, 22, 0.35);
   transform: scale(1.08);
 }
+
 /* Remove Swiper's default '>' / '<' text and replace with SVG chevron */
 .swiper-button-next::after,
 .swiper-button-prev::after {
-  font-size: 0 !important; /* kill default text */
+  font-size: 0 !important;
+  /* kill default text */
   content: '' !important;
   display: block;
   width: 18px;
@@ -155,15 +237,19 @@
   background-repeat: no-repeat;
   background-position: center;
 }
+
 .swiper-button-next::after {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f97316' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'/%3E%3C/svg%3E");
 }
+
 .swiper-button-prev::after {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f97316' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='15 18 9 12 15 6'/%3E%3C/svg%3E");
 }
+
 .swiper-button-next:hover::after {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'/%3E%3C/svg%3E");
 }
+
 .swiper-button-prev:hover::after {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='15 18 9 12 15 6'/%3E%3C/svg%3E");
 }
@@ -171,15 +257,18 @@
 /* Hero-specific: translucent glass arrows on dark image */
 .hero-swiper .swiper-button-next,
 .hero-swiper .swiper-button-prev {
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(10px);
 }
+
 .hero-swiper .swiper-button-next::after {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'/%3E%3C/svg%3E");
 }
+
 .hero-swiper .swiper-button-prev::after {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='15 18 9 12 15 6'/%3E%3C/svg%3E");
 }
+
 .hero-swiper .swiper-button-next:hover,
 .hero-swiper .swiper-button-prev:hover {
   background: var(--primary);
@@ -189,12 +278,13 @@
   bottom: 18px;
 }
 
-/* Keyframes (kept outside utility layers to ensure they are available to animate-* classes) */
+/* Keyframes */
 @keyframes slide-in {
   from {
     opacity: 0;
     transform: translateX(100%);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -202,11 +292,81 @@
 }
 
 @keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slide-down {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes badge-shine {
+
+  0%,
+  100% {
+    left: -100%;
+  }
+
+  50% {
+    left: 100%;
+  }
+}
+
+@keyframes fire-pulse {
+
+  0%,
+  100% {
+    box-shadow: 0 2px 10px rgba(249, 115, 22, 0.4);
+  }
+
+  50% {
+    box-shadow: 0 4px 20px rgba(249, 115, 22, 0.6);
+  }
+}
+
+/* ── Page Transition Animations ── */
+@keyframes page-enter-anim {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes page-exit-anim {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+.page-enter {
+  animation: page-enter-anim 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.page-exit {
+  animation: page-exit-anim 0.15s ease-in forwards;
+  pointer-events: none;
 }

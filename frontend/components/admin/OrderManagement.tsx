@@ -6,6 +6,7 @@ import { ShoppingCart } from 'lucide-react'
 import { useToast } from '@/components/Toast'
 
 import { API_URL } from '@/lib/api'
+import { AdminTableSkeleton } from '@/components/Skeletons'
 
 interface Order {
   _id: string
@@ -92,9 +93,7 @@ export default function OrderManagement() {
   }
 
   if (loading) {
-    return <div className="flex justify-center py-12">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
-    </div>
+    return <AdminTableSkeleton rows={6} />
   }
 
   return (

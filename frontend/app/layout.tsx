@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import MobileBottomNav from '@/components/MobileBottomNav'
 import { ToastProvider } from '@/components/Toast'
+import PageTransition from '@/components/PageTransition'
 
 export const metadata: Metadata = {
   title: 'MugdhoBari - আপনার পোশাকের বিশ্বস্ত সঙ্গী',
@@ -17,7 +18,9 @@ export default function RootLayout({
     <html lang="bn">
       <body className="bangla-font pb-20 md:pb-0">
         <ToastProvider>
-          {children}
+          <PageTransition>
+            {children}
+          </PageTransition>
           <MobileBottomNav />
         </ToastProvider>
       </body>

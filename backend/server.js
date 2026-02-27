@@ -18,6 +18,17 @@ app.use('/api/orders', require('./routes/orders'));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/admin', require('./routes/admin'));
 
+// Public banners API (no auth needed)
+const Banner = require('./models/Banner');
+app.get('/api/banners', async (req, res) => {
+  try {
+    const banners = await Banner.find({ active: true }).sort({ order: 1, createdAt: -1 });
+    res.json(banners);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 const User = require('./models/User');
 
 // MongoDB Connection

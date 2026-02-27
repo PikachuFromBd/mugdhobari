@@ -7,6 +7,7 @@ import { Pencil, Trash2, Plus, X, Package } from 'lucide-react'
 import { useToast } from '@/components/Toast'
 
 import { API_URL } from '@/lib/api'
+import { AdminTableSkeleton } from '@/components/Skeletons'
 
 interface Product {
   _id: string
@@ -175,9 +176,7 @@ export default function ProductManagement() {
   ]
 
   if (loading) {
-    return <div className="flex justify-center py-12">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
-    </div>
+    return <AdminTableSkeleton rows={5} />
   }
 
   return (
@@ -222,15 +221,27 @@ export default function ProductManagement() {
               </div>
             </div>
 
-            <div>
-              <label className="block text-gray-700 font-medium mb-2">বিবরণ (বাংলা)</label>
-              <textarea
-                value={formData.descriptionBn}
-                onChange={(e) => setFormData({ ...formData, descriptionBn: e.target.value })}
-                required
-                rows={3}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-gray-700 font-medium mb-2">বিবরণ (ইংরেজি)</label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  required
+                  rows={3}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-gray-700 font-medium mb-2">বিবরণ (বাংলা)</label>
+                <textarea
+                  value={formData.descriptionBn}
+                  onChange={(e) => setFormData({ ...formData, descriptionBn: e.target.value })}
+                  required
+                  rows={3}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -21,7 +21,7 @@ const emptyForm = {
     name: '', nameBn: '', description: '', descriptionBn: '',
     category: 'hoodie', categoryBn: 'হুডি', price: '', discountPrice: '',
     stock: '', sizes: '', colors: '', trending: false, featured: false,
-    isNew: false, isPublished: true, metaTitle: '', metaDescription: ''
+    isNewArrival: false, isPublished: true, metaTitle: '', metaDescription: ''
 }
 
 export default function ProductFormPage() {
@@ -50,7 +50,7 @@ export default function ProductFormPage() {
                         price: p.price?.toString() || '', discountPrice: p.discountPrice?.toString() || '',
                         stock: p.stock?.toString() || '', sizes: p.sizes?.join(', ') || '',
                         colors: p.colors?.join(', ') || '', trending: p.trending || false,
-                        featured: p.featured || false, isNew: p.isNew || false,
+                        featured: p.featured || false, isNewArrival: p.isNewArrival || false,
                         isPublished: p.isPublished !== false, metaTitle: p.metaTitle || '',
                         metaDescription: p.metaDescription || ''
                     })
@@ -174,7 +174,7 @@ export default function ProductFormPage() {
                                 {[
                                     { key: 'trending', label: 'ট্রেন্ডিং' },
                                     { key: 'featured', label: 'ফিচার্ড' },
-                                    { key: 'isNew', label: 'নতুন পণ্য' }
+                                    { key: 'isNewArrival', label: 'নতুন পণ্য' }
                                 ].map(f => (
                                     <label key={f.key} className="flex items-center gap-2 cursor-pointer">
                                         <input type="checkbox" checked={!!form[f.key as keyof typeof form]} onChange={() => toggle(f.key)}

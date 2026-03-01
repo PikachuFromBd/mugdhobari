@@ -100,8 +100,8 @@ export default function ProductsPage() {
             {cats.map(cat => (
               <button key={cat.key} onClick={() => setActiveCategory(cat.key)}
                 className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${activeCategory === cat.key
-                    ? 'bg-orange-500 text-white shadow-md shadow-orange-500/25'
-                    : 'bg-white text-gray-600 border border-gray-200 hover:border-orange-300 hover:text-orange-500'
+                  ? 'bg-orange-500 text-white shadow-md shadow-orange-500/25'
+                  : 'bg-white text-gray-600 border border-gray-200 hover:border-orange-300 hover:text-orange-500'
                   }`}>
                 {cat.label}
               </button>
@@ -142,7 +142,7 @@ export default function ProductsPage() {
                               {Math.round(((product.price - product.discountPrice) / product.price) * 100)}% OFF
                             </span>
                           )}
-                          {product.isNew && (
+                          {product.isNewArrival && (
                             <span className="absolute top-2 left-2 bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md">
                               NEW
                             </span>

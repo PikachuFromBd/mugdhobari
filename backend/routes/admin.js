@@ -116,7 +116,7 @@ router.post('/products', upload.array('images', 10), async (req, res) => {
     if (data.stock) data.stock = parseInt(data.stock);
     data.trending = data.trending === 'true';
     data.featured = data.featured === 'true';
-    data.isNew = data.isNew === 'true';
+    data.isNewArrival = data.isNewArrival === 'true' || data.isNew === 'true';
     data.isPublished = data.isPublished !== 'false';
     const product = new Product({ ...data, images });
     await product.save();
@@ -152,7 +152,7 @@ router.put('/products/:id', upload.array('images', 10), async (req, res) => {
     if (updateData.stock !== undefined) updateData.stock = parseInt(updateData.stock);
     if (updateData.trending !== undefined) updateData.trending = updateData.trending === 'true';
     if (updateData.featured !== undefined) updateData.featured = updateData.featured === 'true';
-    if (updateData.isNew !== undefined) updateData.isNew = updateData.isNew === 'true';
+    if (updateData.isNew !== undefined || updateData.isNewArrival !== undefined) updateData.isNewArrival = (updateData.isNewArrival || updateData.isNew) === 'true';
     if (updateData.isPublished !== undefined) updateData.isPublished = updateData.isPublished !== 'false';
     Object.assign(product, updateData);
     await product.save();

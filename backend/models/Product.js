@@ -30,7 +30,7 @@ const productSchema = new mongoose.Schema({
   stock: { type: Number, default: 0 },
   trending: { type: Boolean, default: false },
   featured: { type: Boolean, default: false },
-  isNew: { type: Boolean, default: false },
+  isNewArrival: { type: Boolean, default: false },
   isPublished: { type: Boolean, default: true },
   metaTitle: { type: String, default: '' },
   metaDescription: { type: String, default: '' },

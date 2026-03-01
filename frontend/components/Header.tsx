@@ -232,9 +232,9 @@ export default function Header() {
           </div>
 
           {/* Mobile Menu */}
-          <div className={`md:hidden overflow-hidden transition-all duration-300 ${isMenuOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
+          <div className={`md:hidden overflow-hidden transition-all duration-300 ${isMenuOpen ? 'max-h-[80vh] opacity-100' : 'max-h-0 opacity-0'
             }`}>
-            <nav className="py-4 border-t border-gray-100 space-y-1">
+            <nav className="py-4 border-t border-gray-100 space-y-1 overflow-y-auto max-h-[calc(80vh-1rem)]">
               <Link href="/" onClick={() => setIsMenuOpen(false)} className="block px-3 py-2.5 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors font-medium">
                 হোম
               </Link>

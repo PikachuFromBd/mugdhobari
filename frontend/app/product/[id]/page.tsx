@@ -155,7 +155,7 @@ export default function ProductDetail() {
                     {Math.round(((product.price - product.discountPrice) / product.price) * 100)}% ছাড়
                   </span>
                 )}
-                {product.isNew && (
+                {product.isNewArrival && (
                   <span className="absolute top-3 right-3 bg-emerald-500 text-white text-xs font-bold px-2.5 py-1 rounded-lg">
                     নতুন
                   </span>
@@ -217,8 +217,8 @@ export default function ProductDetail() {
                     {product.sizes.map((size: string) => (
                       <button key={size} onClick={() => setSelectedSize(size)}
                         className={`px-4 py-2 rounded-xl text-sm font-medium border-2 transition-all ${selectedSize === size
-                            ? 'border-orange-500 bg-orange-50 text-orange-600'
-                            : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                          ? 'border-orange-500 bg-orange-50 text-orange-600'
+                          : 'border-gray-200 text-gray-600 hover:border-gray-300'
                           }`}>{size}</button>
                     ))}
                   </div>
@@ -233,8 +233,8 @@ export default function ProductDetail() {
                     {product.colors.map((color: string) => (
                       <button key={color} onClick={() => setSelectedColor(color)}
                         className={`px-4 py-2 rounded-xl text-sm font-medium border-2 transition-all ${selectedColor === color
-                            ? 'border-orange-500 bg-orange-50 text-orange-600'
-                            : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                          ? 'border-orange-500 bg-orange-50 text-orange-600'
+                          : 'border-gray-200 text-gray-600 hover:border-gray-300'
                           }`}>{color}</button>
                     ))}
                   </div>
